@@ -49,7 +49,7 @@ public class Manager {
         board.setObjectOnLocation(snake, snake.getX(), snake.getY());
  
         AppleElement apple = new AppleElement('a');
-        apple.addRandomApple(board, apple);
+        apple.addRandomApple(board, apple, snake);
 
  
         Scanner scanner = new Scanner(System.in);
@@ -76,14 +76,15 @@ public class Manager {
                 break;
             }
             if (check_eat(snake, apple)) {
-            	apple.addRandomApple(board, apple);
+            	apple.addRandomApple(board, apple, snake);
             	snake.eat_apple();
             	score += 10;
             }
             else {
-            	if (check_conflict_wall(snake, board)) {
+            	if (check_conflict_wall(snake, board) || check_conflict_body(snake)) {
             		return;
             	}
+            	
             }
         }
     }
@@ -107,4 +108,7 @@ public class Manager {
     	}
     }
     
+    public static boolean check_conflict_body(SnakeElement snake) {
+    	return snake.conflict_body();
+    }
 }
