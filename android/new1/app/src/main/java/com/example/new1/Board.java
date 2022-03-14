@@ -15,23 +15,17 @@ public class Board {
     public void initBoard() {
         for (int i = 0; i < this.height; i++) {
             for (int j = 0; j < this.width; j++) {
-                this.boardMatrix[i][j] = '.';
+                this.boardMatrix[i][j] = 'e';
             }
         }
     }
 
-    public void printBoard(int score) {
-        for (int i = 0; i < this.height; i++) {
-            for (int j = 0; j < this.width; j++) {
-                System.out.print(this.boardMatrix[i][j]);
-            }
-            System.out.println();
-        }
-        System.out.println("[SCORE: "+score+"]");
+    public char[][] getBoardMatrix(){
+        return this.boardMatrix;
     }
 
     public void ClearScreenLocation(int x, int y) {
-        this.boardMatrix[y][x] = '.';
+        this.boardMatrix[y][x] = 'e';
     }
 
     public int getBoardWidth() {

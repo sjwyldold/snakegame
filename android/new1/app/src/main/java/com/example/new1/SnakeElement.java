@@ -6,8 +6,7 @@ public class SnakeElement extends BoardComponent {
     private int body_x[];
     private int body_y[];
 
-    private char head_symbol;
-
+    public char head_symbol;
     private boolean eat;
     private char direction;
 
@@ -36,7 +35,7 @@ public class SnakeElement extends BoardComponent {
         this.body_x = new int[50];
         this.body_y = new int[50];
 
-        this.head_symbol = 'o';
+        this.head_symbol = 'h';
         this.eat = false;
         this.direction = 'r';
         setIcon(symbol);
@@ -83,8 +82,8 @@ public class SnakeElement extends BoardComponent {
         int[] new_location_x = new int[snake.body_len];
         int[] new_location_y = new int[snake.body_len];
 
-        new_location_x[0] = snake.getX() - 1;
-        new_location_y[0] = snake.getY();
+        new_location_x[0] = snake.body_x[0] - 1;
+        new_location_y[0] = snake.body_y[0];
         screen.setObjectOnLocation(snake.head_symbol, new_location_x[0], new_location_y[0]);
 
         for(int i=1;i<snake.body_len;i++) {
@@ -113,8 +112,8 @@ public class SnakeElement extends BoardComponent {
         int[] new_location_x = new int[snake.body_len];
         int[] new_location_y = new int[snake.body_len];
 
-        new_location_x[0] = snake.getX() + 1;
-        new_location_y[0] = snake.getY();
+        new_location_x[0] = snake.body_x[0] + 1;
+        new_location_y[0] = snake.body_y[0];
         screen.setObjectOnLocation(snake.head_symbol, new_location_x[0], new_location_y[0]);
 
         for(int i=1;i<snake.body_len;i++) {
@@ -143,8 +142,8 @@ public class SnakeElement extends BoardComponent {
         int[] new_location_x = new int[snake.body_len];
         int[] new_location_y = new int[snake.body_len];
 
-        new_location_x[0] = snake.getX();
-        new_location_y[0] = snake.getY() - 1;
+        new_location_x[0] = snake.body_x[0];
+        new_location_y[0] = snake.body_y[0] - 1;
         screen.setObjectOnLocation(snake.head_symbol, new_location_x[0], new_location_y[0]);
 
         for(int i=1;i<snake.body_len;i++) {
@@ -173,8 +172,8 @@ public class SnakeElement extends BoardComponent {
         int[] new_location_x = new int[snake.body_len];
         int[] new_location_y = new int[snake.body_len];
 
-        new_location_x[0] = snake.getX();
-        new_location_y[0] = snake.getY() + 1;
+        new_location_x[0] = snake.body_x[0];
+        new_location_y[0] = snake.body_y[0] + 1;
         screen.setObjectOnLocation(snake.head_symbol, new_location_x[0], new_location_y[0]);
 
         for(int i=1;i<snake.body_len;i++) {

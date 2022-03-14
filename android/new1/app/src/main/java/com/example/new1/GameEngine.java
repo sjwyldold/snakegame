@@ -2,60 +2,72 @@ package com.example.new1;
 
 public class GameEngine {
 
-    public static void run_game() {
-        final int BOARD_WIDTH = 20;
-        final int BOARD_HEIGHT = 10;
-        final int START_X = BOARD_WIDTH / 2;
-        final int START_Y = BOARD_HEIGHT / 2;
+    private final int BOARD_WIDTH = 15;
+    private final int BOARD_HEIGHT = 15;
+    private final int START_X = BOARD_WIDTH / 2;
+    private final int START_Y = BOARD_HEIGHT / 2;
 
-        Board board = new Board(BOARD_WIDTH, BOARD_HEIGHT);
+    private RoomWall wall;
+    private SnakeElement snake;
+    private AppleElement apple;
+    private int score;
+    private Board board;
+
+    public void finish_game(){
+        this.score=0;
+        board.initBoard();
+    }
+
+    public void init_game() {
+
+        this.score = 0;
+
+        this.board = new Board(BOARD_WIDTH, BOARD_HEIGHT);
         board.initBoard();
 
-        RoomWall wall = new RoomWall('□');
-        wall.addRoomWallRow(board, wall, 0);
-        wall.addRoomWallRow(board, wall, board.getBoardHeight() - 1);
-        wall.addRoomWallColumn(board, wall, 0);
-        wall.addRoomWallColumn(board, wall, board.getBoardWidth() - 1);
+        this.wall = new RoomWall('w');
+        this.wall.addRoomWallRow(this.board, this.wall, 0);
+        this.wall.addRoomWallRow(this.board, this.wall, this.board.getBoardHeight() - 1);
+        this.wall.addRoomWallColumn(this.board, this.wall, 0);
+        this.wall.addRoomWallColumn(this.board, this.wall, this.board.getBoardWidth() - 1);
 
-        SnakeElement snake = new SnakeElement('~', START_X, START_Y);
-        board.setObjectOnLocation(snake, snake.getX(), snake.getY());
+        this.snake = new SnakeElement('b', START_X, START_Y);
+        this.board.setObjectOnLocation(this.snake, this.snake.getX(), this.snake.getY());
 
-        AppleElement apple = new AppleElement('a');
-        apple.addRandomApple(board, apple, snake);
+        this.apple = new AppleElement('a');
+        this.apple.addRandomApple(this.board, this.apple, this.snake);
+    }
 
 
-        char input = '0';
+    public void update_game(char input) {
 
-        boolean isRunning = true;
-        int score = 0;
+        switch (input) {
+            case 'l':
+                this.snake.moveLeft(this.board, this.snake);
+                break;
+            case 'r':
+                this.snake.moveRight(this.board, this.snake);
+                break;
+            case 'u':
+                this.snake.moveUp(this.board, this.snake);
+                break;
+            case 'd':
+                this.snake.moveDown(this.board, this.snake);
+                break;
+        }
 
-        while (isRunning) {
-            board.printBoard(score);
-            switch (input) {
-                case 'l':
-                    snake.moveLeft(board, snake);
-                    break;
-                case 'r':
-                    snake.moveRight(board, snake);
-                    break;
-                case 'u':
-                    snake.moveUp(board, snake);
-                    break;
-                case 'd':
-                    snake.moveDown(board, snake);
-                    break;
+        // eat
+        if (check_eat(this.snake, this.apple)) {
+            this.apple.addRandomApple(this.board, this.apple, this.snake);
+            this.snake.eat_apple();
+            this.score += 10;
+        }
+        // not eat
+        else {
+            if (check_conflict_wall(snake, board) || check_conflict_body(snake)) {
+                return;
             }
-            if (check_eat(snake, apple)) {
-                apple.addRandomApple(board, apple, snake);
-                snake.eat_apple();
-                score += 10;
-            }
-            else {
-                if (check_conflict_wall(snake, board) || check_conflict_body(snake)) {
-                    return;
-                }
 
-            }
         }
     }
 
@@ -80,5 +92,13 @@ public class GameEngine {
 
     public static boolean check_conflict_body(SnakeElement snake) {
         return snake.conflict_body();
+    }
+
+    public char[][] getBoard(){
+        return this.board.getBoardMatrix();
+    }
+
+    public int getScore(){
+        return score;
     }
 }
