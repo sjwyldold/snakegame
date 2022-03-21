@@ -2,7 +2,7 @@ package com.example.new1;
 
 import android.drm.DrmStore;
 
-public class SnakeElement extends BoardComponent {
+public class SnakeElement {
 
     private int body_len;
     private int body_x[];
@@ -17,25 +17,6 @@ public class SnakeElement extends BoardComponent {
         LEFT, RIGHT, UP, DOWN
     }
 
-    @Override
-    public void setX(int newLocation) {
-        this.body_x[0] = newLocation;
-    }
-
-    @Override
-    public void setY(int newLocation) {
-        this.body_y[0] = newLocation;
-    }
-
-    @Override
-    public int getX() {
-        return this.body_x[0];
-    }
-
-    @Override
-    public int getY() {
-        return this.body_y[0];
-    }
 
     public SnakeElement(char symbol, int xStartingLocation, int yStartingLocation) {
         this.body_len = 1;
@@ -46,10 +27,16 @@ public class SnakeElement extends BoardComponent {
         this.body_symbol = 'b';
         this.eat = false;
         this.direction = Direction.RIGHT;
-        setIcon(symbol);
-        setX(xStartingLocation);
-        setY(yStartingLocation);
+        this.body_x[0] = xStartingLocation;
+        this.body_y[0] = yStartingLocation;
+    }
 
+    public int getHeadLocX(){
+        return body_x[0];
+    }
+
+    public int getHeadLocY(){
+        return body_y[0];
     }
 
     public void eat_apple() {
@@ -130,7 +117,7 @@ public class SnakeElement extends BoardComponent {
         for(int i=1;i<snake.body_len;i++) {
             new_location_x[i] = snake.body_x[i-1];
             new_location_y[i] = snake.body_y[i-1];
-            screen.setObjectOnLocation(snake, new_location_x[i], new_location_y[i]);
+            screen.setObjectOnLocation(snake.body_symbol, new_location_x[i], new_location_y[i]);
         }
 
         if (this.eat == true) {
@@ -160,7 +147,7 @@ public class SnakeElement extends BoardComponent {
         for(int i=1;i<snake.body_len;i++) {
             new_location_x[i] = snake.body_x[i-1];
             new_location_y[i] = snake.body_y[i-1];
-            screen.setObjectOnLocation(snake, new_location_x[i], new_location_y[i]);
+            screen.setObjectOnLocation(snake.body_symbol, new_location_x[i], new_location_y[i]);
         }
 
         if (this.eat == true) {
@@ -190,7 +177,7 @@ public class SnakeElement extends BoardComponent {
         for(int i=1;i<snake.body_len;i++) {
             new_location_x[i] = snake.body_x[i-1];
             new_location_y[i] = snake.body_y[i-1];
-            screen.setObjectOnLocation(snake, new_location_x[i], new_location_y[i]);
+            screen.setObjectOnLocation(snake.body_symbol, new_location_x[i], new_location_y[i]);
         }
 
         if (this.eat == true) {
@@ -220,7 +207,7 @@ public class SnakeElement extends BoardComponent {
         for(int i=1;i<snake.body_len;i++) {
             new_location_x[i] = snake.body_x[i-1];
             new_location_y[i] = snake.body_y[i-1];
-            screen.setObjectOnLocation(snake, new_location_x[i], new_location_y[i]);
+            screen.setObjectOnLocation(snake.body_symbol, new_location_x[i], new_location_y[i]);
         }
 
         if (this.eat == true) {

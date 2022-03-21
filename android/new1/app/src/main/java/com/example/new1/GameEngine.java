@@ -58,7 +58,7 @@ public class GameEngine {
         this.wall.addRoomWallColumn(this.board, this.wall, this.board.getBoardWidth() - 1);
 
         this.snake = new SnakeElement('b', START_X, START_Y);
-        this.board.setObjectOnLocation(this.snake, this.snake.getX(), this.snake.getY());
+        this.board.setObjectOnLocation(this.snake.head_symbol, this.snake.getHeadLocX(), this.snake.getHeadLocY());
 
         this.apple = new AppleElement('a');
         this.apple.addRandomApple(this.board, this.apple, this.snake);
@@ -101,7 +101,7 @@ public class GameEngine {
     }
 
     public static boolean check_eat(SnakeElement snake, AppleElement apple) {
-        if ((snake.getX() == apple.getX()) && (snake.getY() == apple.getY())) {
+        if ((snake.getHeadLocX() == apple.getX()) && (snake.getHeadLocY() == apple.getY())) {
             return true;
         }
         else {
@@ -110,8 +110,8 @@ public class GameEngine {
     }
 
     public static boolean check_conflict_wall(SnakeElement snake, Board board) {
-        if ((snake.getX() == 0) || (snake.getX() == (board.getBoardWidth() - 1)) ||
-                (snake.getY() == 0) || (snake.getY() == (board.getBoardHeight() -1))) {
+        if ((snake.getHeadLocX() == 0) || (snake.getHeadLocX() == (board.getBoardWidth() - 1)) ||
+                (snake.getHeadLocY() == 0) || (snake.getHeadLocY() == (board.getBoardHeight() -1))) {
             return true;
         }
         else {
