@@ -15,9 +15,10 @@ public class GameEngine {
     private int score;
     private Board board;
     private GameStatus gameStatus;
+    private boolean pushed;
 
     public enum GameStatus {
-        RUN, FIN
+        RUN, FIN, STOP
     }
 
 
@@ -29,7 +30,13 @@ public class GameEngine {
         if (this.gameStatus == GameStatus.FIN){
             return;
         }
-        update_game(snake.getDirection());
+        this.pushed = false;
+        update_game();
+    }
+
+    public void stop_game(){
+        this.gameStatus = GameStatus.STOP;
+        remove_game();
     }
 
     public void finish_game(){
@@ -65,25 +72,16 @@ public class GameEngine {
     }
 
     public void change_snake_direction(SnakeElement.Direction direction){
+        if (this.pushed == true){
+            return;
+        }
         this.snake.changeDirection(direction);
+        this.pushed = true;
     }
 
-    public void update_game(SnakeElement.Direction input_direction) {
+    public void update_game() {
 
-        switch (input_direction) {
-            case LEFT:
-                this.snake.moveLeft(this.board, this.snake);
-                break;
-            case RIGHT:
-                this.snake.moveRight(this.board, this.snake);
-                break;
-            case UP:
-                this.snake.moveUp(this.board, this.snake);
-                break;
-            case DOWN:
-                this.snake.moveDown(this.board, this.snake);
-                break;
-        }
+        this.snake.move(this.board);
 
         // eat
         if (check_eat(this.snake, this.apple)) {
@@ -94,7 +92,6 @@ public class GameEngine {
         // not eat
         else {
             if (check_conflict_wall(snake, board) || check_conflict_body(snake)) {
-                gameStatus = GameStatus.FIN;
                 finish_game();
             }
         }

@@ -1,16 +1,17 @@
 package com.example.new1;
 
 import android.drm.DrmStore;
+import android.util.Log;
 
 public class SnakeElement {
 
     private int body_len;
     private int body_x[];
     private int body_y[];
+    private boolean eat;
 
     public char head_symbol;
     public char body_symbol;
-    private boolean eat;
     private Direction direction;
 
     public enum Direction{
@@ -19,16 +20,17 @@ public class SnakeElement {
 
 
     public SnakeElement(char symbol, int xStartingLocation, int yStartingLocation) {
-        this.body_len = 1;
-        this.body_x = new int[50];
-        this.body_y = new int[50];
 
         this.head_symbol = 'h';
         this.body_symbol = 'b';
-        this.eat = false;
         this.direction = Direction.RIGHT;
+
+        this.body_x = new int[50];
+        this.body_y = new int[50];
+        this.body_len = 1;
         this.body_x[0] = xStartingLocation;
         this.body_y[0] = yStartingLocation;
+        this.eat = false;
     }
 
     public int getHeadLocX(){
@@ -40,7 +42,6 @@ public class SnakeElement {
     }
 
     public void eat_apple() {
-        this.body_len += 1;
         this.eat = true;
     }
 
@@ -100,123 +101,65 @@ public class SnakeElement {
         }
     }
 
-    public void moveLeft(Board screen, SnakeElement snake) {
-        // check direction
-        if (snake.direction == Direction.RIGHT) {
-            return;
-        }
-        snake.direction = Direction.LEFT;
+    public void move(Board screen){
+        clearSnakeOnScreen(screen);
 
-        int[] new_location_x = new int[snake.body_len];
-        int[] new_location_y = new int[snake.body_len];
-
-        new_location_x[0] = snake.body_x[0] - 1;
-        new_location_y[0] = snake.body_y[0];
-        screen.setObjectOnLocation(snake.head_symbol, new_location_x[0], new_location_y[0]);
-
-        for(int i=1;i<snake.body_len;i++) {
-            new_location_x[i] = snake.body_x[i-1];
-            new_location_y[i] = snake.body_y[i-1];
-            screen.setObjectOnLocation(snake.body_symbol, new_location_x[i], new_location_y[i]);
-        }
-
-        if (this.eat == true) {
+        if (this.eat == true){
+            this.body_len += 1;
             this.eat = false;
         }
-        else {
-            screen.ClearScreenLocation(snake.body_x[snake.body_len-1], snake.body_y[snake.body_len-1]);
+
+        int[] new_location_x = new int[this.body_len];
+        int[] new_location_y = new int[this.body_len];
+
+        switch (direction){
+            case RIGHT:
+                new_location_x[0] = this.body_x[0] + 1;
+                new_location_y[0] = this.body_y[0];
+                break;
+
+            case LEFT:
+                new_location_x[0] = this.body_x[0] - 1;
+                new_location_y[0] = this.body_y[0];
+                break;
+
+            case UP:
+                new_location_x[0] = this.body_x[0];
+                new_location_y[0] = this.body_y[0] - 1;
+                break;
+
+            case DOWN:
+                new_location_x[0] = this.body_x[0];
+                new_location_y[0] = this.body_y[0] + 1;
+                break;
         }
+
+        for (int i=1;i<this.body_len;i++){
+            new_location_x[i] = this.body_x[i-1];
+            new_location_y[i] = this.body_y[i-1];
+        }
+
         this.body_x = new_location_x;
         this.body_y = new_location_y;
+
+        drawSnakeOnScreen(screen);
+
     }
 
-    public void moveRight(Board screen, SnakeElement snake) {
-        // check direction
-        if (snake.direction == Direction.LEFT) {
-            return;
+    public void clearSnakeOnScreen(Board screen){
+        for (int i=0;i<body_len;i++){
+            screen.ClearScreenLocation(body_x[i],body_y[i]);
         }
-        snake.direction = Direction.RIGHT;
-
-        int[] new_location_x = new int[snake.body_len];
-        int[] new_location_y = new int[snake.body_len];
-
-        new_location_x[0] = snake.body_x[0] + 1;
-        new_location_y[0] = snake.body_y[0];
-        screen.setObjectOnLocation(snake.head_symbol, new_location_x[0], new_location_y[0]);
-
-        for(int i=1;i<snake.body_len;i++) {
-            new_location_x[i] = snake.body_x[i-1];
-            new_location_y[i] = snake.body_y[i-1];
-            screen.setObjectOnLocation(snake.body_symbol, new_location_x[i], new_location_y[i]);
-        }
-
-        if (this.eat == true) {
-            this.eat = false;
-        }
-        else {
-            screen.ClearScreenLocation(snake.body_x[snake.body_len-1], snake.body_y[snake.body_len-1]);
-        }
-        this.body_x = new_location_x;
-        this.body_y = new_location_y;
     }
 
-    public void moveUp(Board screen, SnakeElement snake) {
-        // check direction
-        if (snake.direction == Direction.DOWN) {
-            return;
+    public void drawSnakeOnScreen(Board screen){
+        for (int i=0;i<this.body_len;i++){
+            if (i==0){
+                screen.setObjectOnLocation(this.head_symbol, this.body_x[i], this.body_y[i]);
+            }
+            else{
+                screen.setObjectOnLocation(this.body_symbol, this.body_x[i], this.body_y[i]);
+            }
         }
-        snake.direction = Direction.UP;
-
-        int[] new_location_x = new int[snake.body_len];
-        int[] new_location_y = new int[snake.body_len];
-
-        new_location_x[0] = snake.body_x[0];
-        new_location_y[0] = snake.body_y[0] - 1;
-        screen.setObjectOnLocation(snake.head_symbol, new_location_x[0], new_location_y[0]);
-
-        for(int i=1;i<snake.body_len;i++) {
-            new_location_x[i] = snake.body_x[i-1];
-            new_location_y[i] = snake.body_y[i-1];
-            screen.setObjectOnLocation(snake.body_symbol, new_location_x[i], new_location_y[i]);
-        }
-
-        if (this.eat == true) {
-            this.eat = false;
-        }
-        else {
-            screen.ClearScreenLocation(snake.body_x[snake.body_len-1], snake.body_y[snake.body_len-1]);
-        }
-        this.body_x = new_location_x;
-        this.body_y = new_location_y;
-    }
-
-    public void moveDown(Board screen, SnakeElement snake) {
-        // check direction
-        if (snake.direction == Direction.UP) {
-            return;
-        }
-        snake.direction = Direction.DOWN;
-
-        int[] new_location_x = new int[snake.body_len];
-        int[] new_location_y = new int[snake.body_len];
-
-        new_location_x[0] = snake.body_x[0];
-        new_location_y[0] = snake.body_y[0] + 1;
-        screen.setObjectOnLocation(snake.head_symbol, new_location_x[0], new_location_y[0]);
-
-        for(int i=1;i<snake.body_len;i++) {
-            new_location_x[i] = snake.body_x[i-1];
-            new_location_y[i] = snake.body_y[i-1];
-            screen.setObjectOnLocation(snake.body_symbol, new_location_x[i], new_location_y[i]);
-        }
-
-        if (this.eat == true) {
-            this.eat = false;
-        }
-        else {
-            screen.ClearScreenLocation(snake.body_x[snake.body_len-1], snake.body_y[snake.body_len-1]);
-        }
-        this.body_x = new_location_x;
-        this.body_y = new_location_y;
     }
 }

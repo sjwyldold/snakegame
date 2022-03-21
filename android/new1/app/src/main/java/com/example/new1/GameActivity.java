@@ -58,7 +58,7 @@ public class GameActivity extends AppCompatActivity {
         stop_button.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                gameEngine.finish_game();
+                gameEngine.stop_game();
 
                 snakeGameView.setGameMap(gameEngine.getBoard());
                 score_view.setText("Score: "+Integer.toString(gameEngine.getScore()));
@@ -70,6 +70,13 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 gameEngine.change_snake_direction(SnakeElement.Direction.LEFT);
+            }
+        });
+
+        right_button.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                gameEngine.change_snake_direction(SnakeElement.Direction.RIGHT);
             }
         });
 
@@ -86,13 +93,6 @@ public class GameActivity extends AppCompatActivity {
                 gameEngine.change_snake_direction(SnakeElement.Direction.DOWN);
             }
         });
-
-        right_button.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                gameEngine.change_snake_direction(SnakeElement.Direction.RIGHT);
-            }
-        });
     }
 
     private void startHandler(){
@@ -104,8 +104,11 @@ public class GameActivity extends AppCompatActivity {
                 if (gameEngine.getGameStatus() == GameEngine.GameStatus.RUN){
                     handler.postDelayed(gameTask, update_delay);
                 }
-                if (gameEngine.getGameStatus() == GameEngine.GameStatus.FIN){
+                else if (gameEngine.getGameStatus() == GameEngine.GameStatus.FIN){
                     Toast.makeText(getApplicationContext(), "Game Over !", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    return;
                 }
 
                 snakeGameView.setGameMap(gameEngine.getBoard());
