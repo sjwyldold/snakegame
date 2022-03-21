@@ -1,5 +1,7 @@
 package com.example.new1;
 
+import android.drm.DrmStore;
+
 public class SnakeElement extends BoardComponent {
 
     private int body_len;
@@ -7,8 +9,13 @@ public class SnakeElement extends BoardComponent {
     private int body_y[];
 
     public char head_symbol;
+    public char body_symbol;
     private boolean eat;
-    private char direction;
+    private Direction direction;
+
+    public enum Direction{
+        LEFT, RIGHT, UP, DOWN
+    }
 
     @Override
     public void setX(int newLocation) {
@@ -36,8 +43,9 @@ public class SnakeElement extends BoardComponent {
         this.body_y = new int[50];
 
         this.head_symbol = 'h';
+        this.body_symbol = 'b';
         this.eat = false;
-        this.direction = 'r';
+        this.direction = Direction.RIGHT;
         setIcon(symbol);
         setX(xStartingLocation);
         setY(yStartingLocation);
@@ -72,12 +80,45 @@ public class SnakeElement extends BoardComponent {
         return false;
     }
 
+    public Direction getDirection(){
+        return direction;
+    }
+
+    public void changeDirection(Direction new_direction){
+        switch(new_direction){
+            case LEFT:
+                if (direction == Direction.RIGHT){
+                    return;
+                }
+                direction = Direction.LEFT;
+                break;
+            case RIGHT:
+                if (direction == Direction.LEFT){
+                    return;
+                }
+                direction = Direction.RIGHT;
+                break;
+            case UP:
+                if (direction == Direction.DOWN){
+                    return;
+                }
+                direction = Direction.UP;
+                break;
+            case DOWN:
+                if (direction == Direction.UP){
+                    return;
+                }
+                direction = Direction.DOWN;
+                break;
+        }
+    }
+
     public void moveLeft(Board screen, SnakeElement snake) {
         // check direction
-        if (snake.direction == 'r') {
+        if (snake.direction == Direction.RIGHT) {
             return;
         }
-        snake.direction = 'l';
+        snake.direction = Direction.LEFT;
 
         int[] new_location_x = new int[snake.body_len];
         int[] new_location_y = new int[snake.body_len];
@@ -104,10 +145,10 @@ public class SnakeElement extends BoardComponent {
 
     public void moveRight(Board screen, SnakeElement snake) {
         // check direction
-        if (snake.direction == 'l') {
+        if (snake.direction == Direction.LEFT) {
             return;
         }
-        snake.direction = 'r';
+        snake.direction = Direction.RIGHT;
 
         int[] new_location_x = new int[snake.body_len];
         int[] new_location_y = new int[snake.body_len];
@@ -134,10 +175,10 @@ public class SnakeElement extends BoardComponent {
 
     public void moveUp(Board screen, SnakeElement snake) {
         // check direction
-        if (snake.direction == 'd') {
+        if (snake.direction == Direction.DOWN) {
             return;
         }
-        snake.direction = 'u';
+        snake.direction = Direction.UP;
 
         int[] new_location_x = new int[snake.body_len];
         int[] new_location_y = new int[snake.body_len];
@@ -164,10 +205,10 @@ public class SnakeElement extends BoardComponent {
 
     public void moveDown(Board screen, SnakeElement snake) {
         // check direction
-        if (snake.direction == 'u') {
+        if (snake.direction == Direction.UP) {
             return;
         }
-        snake.direction = 'd';
+        snake.direction = Direction.DOWN;
 
         int[] new_location_x = new int[snake.body_len];
         int[] new_location_y = new int[snake.body_len];

@@ -1,5 +1,7 @@
 package com.example.new1;
 
+import android.widget.Toast;
+
 public class GameEngine {
 
     private final int BOARD_WIDTH = 15;
@@ -12,15 +14,39 @@ public class GameEngine {
     private AppleElement apple;
     private int score;
     private Board board;
+    private GameStatus gameStatus;
+
+    public enum GameStatus {
+        RUN, FIN
+    }
+
+
+    public GameStatus getGameStatus(){
+        return this.gameStatus;
+    }
+
+    public void run_game(){
+        if (this.gameStatus == GameStatus.FIN){
+            return;
+        }
+        update_game(snake.getDirection());
+    }
 
     public void finish_game(){
-        this.score=0;
-        board.initBoard();
+        this.gameStatus = GameStatus.FIN;
+        remove_game();
+    }
+
+    public void remove_game(){
+        this.score = 0;
+        this.board = new Board(BOARD_WIDTH, BOARD_HEIGHT);
+        this.board.initBoard();
     }
 
     public void init_game() {
 
         this.score = 0;
+        this.gameStatus = GameStatus.RUN;
 
         this.board = new Board(BOARD_WIDTH, BOARD_HEIGHT);
         board.initBoard();
@@ -38,20 +64,23 @@ public class GameEngine {
         this.apple.addRandomApple(this.board, this.apple, this.snake);
     }
 
+    public void change_snake_direction(SnakeElement.Direction direction){
+        this.snake.changeDirection(direction);
+    }
 
-    public void update_game(char input) {
+    public void update_game(SnakeElement.Direction input_direction) {
 
-        switch (input) {
-            case 'l':
+        switch (input_direction) {
+            case LEFT:
                 this.snake.moveLeft(this.board, this.snake);
                 break;
-            case 'r':
+            case RIGHT:
                 this.snake.moveRight(this.board, this.snake);
                 break;
-            case 'u':
+            case UP:
                 this.snake.moveUp(this.board, this.snake);
                 break;
-            case 'd':
+            case DOWN:
                 this.snake.moveDown(this.board, this.snake);
                 break;
         }
@@ -65,9 +94,9 @@ public class GameEngine {
         // not eat
         else {
             if (check_conflict_wall(snake, board) || check_conflict_body(snake)) {
-                return;
+                gameStatus = GameStatus.FIN;
+                finish_game();
             }
-
         }
     }
 

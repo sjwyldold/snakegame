@@ -1,24 +1,31 @@
 package com.example.new1;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class GameActivity extends AppCompatActivity {
 
     private Button start_button;
-    private TextView score_view;
     private Button stop_button;
     private Button left_button;
     private Button up_button;
     private Button down_button;
     private Button right_button;
+    private TextView score_view;
 
-    GameEngine gameEngine;
-    SnakeGameView snakeGameView;
+    private GameEngine gameEngine;
+    private SnakeGameView snakeGameView;
+
+    private final Handler handler = new Handler();
+    private final long update_delay = 500;
+    private Runnable gameTask;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +42,7 @@ public class GameActivity extends AppCompatActivity {
         right_button = findViewById(R.id.right_button);
 
         gameEngine = new GameEngine();
-        gameEngine.init_game();
+        gameEngine.finish_game();
         snakeGameView = findViewById(R.id.snake_view);
         snakeGameView.setGameMap(gameEngine.getBoard());
 
@@ -43,9 +50,7 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 gameEngine.init_game();
-                snakeGameView.setGameMap(gameEngine.getBoard());
-                score_view.setText("Score: "+Integer.toString(gameEngine.getScore()));
-                snakeGameView.invalidate();
+                startHandler();
             }
         });
 
@@ -53,6 +58,7 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 gameEngine.finish_game();
+
                 snakeGameView.setGameMap(gameEngine.getBoard());
                 score_view.setText("Score: "+Integer.toString(gameEngine.getScore()));
                 snakeGameView.invalidate();
@@ -62,42 +68,50 @@ public class GameActivity extends AppCompatActivity {
         left_button.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                gameEngine.update_game('l');
-                snakeGameView.setGameMap(gameEngine.getBoard());
-                score_view.setText("Score: "+Integer.toString(gameEngine.getScore()));
-                snakeGameView.invalidate();
+                gameEngine.change_snake_direction(SnakeElement.Direction.LEFT);
             }
         });
 
         up_button.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                gameEngine.update_game('u');
-                snakeGameView.setGameMap(gameEngine.getBoard());
-                score_view.setText("Score: "+Integer.toString(gameEngine.getScore()));
-                snakeGameView.invalidate();
+                gameEngine.change_snake_direction(SnakeElement.Direction.UP);
             }
         });
 
         down_button.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                gameEngine.update_game('d');
-                snakeGameView.setGameMap(gameEngine.getBoard());
-                score_view.setText("Score: "+Integer.toString(gameEngine.getScore()));
-                snakeGameView.invalidate();
+                gameEngine.change_snake_direction(SnakeElement.Direction.DOWN);
             }
         });
 
         right_button.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                gameEngine.update_game('r');
+                gameEngine.change_snake_direction(SnakeElement.Direction.RIGHT);
+            }
+        });
+    }
+
+    private void startHandler(){
+        gameTask = new Runnable() {
+            @Override
+            public void run() {
+                gameEngine.run_game();
+
+                if (gameEngine.getGameStatus() == GameEngine.GameStatus.RUN){
+                    handler.postDelayed(gameTask, update_delay);
+                }
+                if (gameEngine.getGameStatus() == GameEngine.GameStatus.FIN){
+                    Toast.makeText(getApplicationContext(), "Game Over !", Toast.LENGTH_SHORT).show();
+                }
+
                 snakeGameView.setGameMap(gameEngine.getBoard());
                 score_view.setText("Score: "+Integer.toString(gameEngine.getScore()));
                 snakeGameView.invalidate();
             }
-        });
-
+        };
+        gameTask.run();
     }
 }
