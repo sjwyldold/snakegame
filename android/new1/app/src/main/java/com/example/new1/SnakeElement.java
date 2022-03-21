@@ -3,12 +3,26 @@ package com.example.new1;
 import android.drm.DrmStore;
 import android.util.Log;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Iterator;
+
+
+class SnakeLocation {
+    public int locX;
+    public int locY;
+
+    public SnakeLocation(int x, int y){
+        this.locX = x;
+        this.locY = y;
+    }
+}
+
 public class SnakeElement {
 
     private int body_len;
-    private int body_x[];
-    private int body_y[];
     private boolean eat;
+    private Deque<SnakeLocation> body;
 
     public char head_symbol;
     public char body_symbol;
@@ -25,20 +39,19 @@ public class SnakeElement {
         this.body_symbol = 'b';
         this.direction = Direction.RIGHT;
 
-        this.body_x = new int[50];
-        this.body_y = new int[50];
+        body = new ArrayDeque<SnakeLocation>();
+        body.add(new SnakeLocation(xStartingLocation, yStartingLocation));
         this.body_len = 1;
-        this.body_x[0] = xStartingLocation;
-        this.body_y[0] = yStartingLocation;
         this.eat = false;
     }
 
+
     public int getHeadLocX(){
-        return body_x[0];
+        return body.getLast().locX;
     }
 
     public int getHeadLocY(){
-        return body_y[0];
+        return body.getLast().locY;
     }
 
     public void eat_apple() {
@@ -46,23 +59,32 @@ public class SnakeElement {
     }
 
     public boolean conflict_body() {
-        int x = this.body_x[0];
-        int y = this.body_y[0];
+        int x = getHeadLocX();
+        int y = getHeadLocY();
 
         return isBody(x,y);
     }
 
     public boolean isHead(int x, int y) {
-        if ((x == body_x[0]) && (y == body_y[0])) {
+        if ((x == getHeadLocX()) && (y == getHeadLocY())) {
             return true;
         }
         return false;
     }
 
     public boolean isBody(int x, int y) {
-        for(int i=1;i<this.body_len;i++) {
-            if ((x == body_x[i]) && (y==body_y[i])) {
-                return true;
+        Iterator<SnakeLocation> iter = this.body.descendingIterator();
+        boolean isHead = true;
+        while(iter.hasNext()){
+            SnakeLocation tmp_location = iter.next();
+            if (isHead){
+                isHead = false;
+                continue;
+            }
+            else { // body
+                if ((x == tmp_location.locX) && (y == tmp_location.locY)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -104,61 +126,53 @@ public class SnakeElement {
     public void move(Board screen){
         clearSnakeOnScreen(screen);
 
-        if (this.eat == true){
-            this.body_len += 1;
-            this.eat = false;
-        }
-
-        int[] new_location_x = new int[this.body_len];
-        int[] new_location_y = new int[this.body_len];
-
         switch (direction){
             case RIGHT:
-                new_location_x[0] = this.body_x[0] + 1;
-                new_location_y[0] = this.body_y[0];
+                body.add(new SnakeLocation(getHeadLocX() + 1, getHeadLocY()));
                 break;
 
             case LEFT:
-                new_location_x[0] = this.body_x[0] - 1;
-                new_location_y[0] = this.body_y[0];
+                body.add(new SnakeLocation(getHeadLocX() - 1, getHeadLocY()));
                 break;
 
             case UP:
-                new_location_x[0] = this.body_x[0];
-                new_location_y[0] = this.body_y[0] - 1;
+                body.add(new SnakeLocation(getHeadLocX(), getHeadLocY() - 1));
                 break;
 
             case DOWN:
-                new_location_x[0] = this.body_x[0];
-                new_location_y[0] = this.body_y[0] + 1;
+                body.add(new SnakeLocation(getHeadLocX(), getHeadLocY() + 1));
                 break;
         }
 
-        for (int i=1;i<this.body_len;i++){
-            new_location_x[i] = this.body_x[i-1];
-            new_location_y[i] = this.body_y[i-1];
+        if (this.eat == true){
+            this.eat = false;
+        }
+        else {
+            body.remove();
         }
 
-        this.body_x = new_location_x;
-        this.body_y = new_location_y;
-
         drawSnakeOnScreen(screen);
-
     }
 
     public void clearSnakeOnScreen(Board screen){
-        for (int i=0;i<body_len;i++){
-            screen.ClearScreenLocation(body_x[i],body_y[i]);
+        Iterator<SnakeLocation> iter = this.body.descendingIterator();
+        while (iter.hasNext()){
+            SnakeLocation tmp_location = iter.next();
+            screen.ClearScreenLocation(tmp_location.locX, tmp_location.locY);
         }
     }
 
     public void drawSnakeOnScreen(Board screen){
-        for (int i=0;i<this.body_len;i++){
-            if (i==0){
-                screen.setObjectOnLocation(this.head_symbol, this.body_x[i], this.body_y[i]);
+        Iterator<SnakeLocation> iter = this.body.descendingIterator();
+        boolean isHead = true;
+        while(iter.hasNext()){
+            SnakeLocation tmp_location = iter.next();
+            if (isHead){
+                isHead = false;
+                screen.setObjectOnLocation(this.head_symbol, tmp_location.locX, tmp_location.locY);
             }
-            else{
-                screen.setObjectOnLocation(this.body_symbol, this.body_x[i], this.body_y[i]);
+            else { // body
+                screen.setObjectOnLocation(this.body_symbol, tmp_location.locX, tmp_location.locY);
             }
         }
     }
